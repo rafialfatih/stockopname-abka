@@ -24,3 +24,15 @@ dist-ssr
 *.sw?
 
 .env
+.env.local
+.env.*.local
+
+# Vite
+.vite/
+
+# Build
+.tsbuildinfo
+
+# Testing
+coverage/
+.nyc_output/
