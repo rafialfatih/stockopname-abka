@@ -263,21 +263,41 @@ const resetAllData = async () => {
   importError.value = ''
   
   try {
-    // Delete all stock counts first
-    const { error: countError } = await supabase
+    // Get all stock count IDs
+    const { data: countIds, error: countSelectError } = await supabase
       .from('stock_counts')
-      .delete()
-      .neq('id', '')
+      .select('id')
     
-    if (countError) throw countError
+    if (countSelectError) throw countSelectError
     
-    // Delete all products
-    const { error: productError } = await supabase
+    // Delete stock counts by ID
+    if (countIds && countIds.length > 0) {
+      const ids = countIds.map(item => item.id)
+      const { error: countDeleteError } = await supabase
+        .from('stock_counts')
+        .delete()
+        .in('id', ids)
+      
+      if (countDeleteError) throw countDeleteError
+    }
+    
+    // Get all product IDs
+    const { data: productIds, error: productSelectError } = await supabase
       .from('products')
-      .delete()
-      .neq('id', '')
+      .select('id')
     
-    if (productError) throw productError
+    if (productSelectError) throw productSelectError
+    
+    // Delete products by ID
+    if (productIds && productIds.length > 0) {
+      const ids = productIds.map(item => item.id)
+      const { error: productDeleteError } = await supabase
+        .from('products')
+        .delete()
+        .in('id', ids)
+      
+      if (productDeleteError) throw productDeleteError
+    }
     
     // Clear cache
     localStorage.removeItem('cached_products')
